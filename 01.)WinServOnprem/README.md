@@ -178,6 +178,13 @@ Install-ADDSForest `
 ```
 
 ### 5.3. `CORP-DC02` Replica Domain Controller Promotion
+
+#### Prerequisites Validation Check
+Prerequisite validation check successfully passed, verifying RPC, LDAP, and Kerberos connectivity to `CORPDC01.corp.local`.
+
+![CORP-DC02 AD DS Prerequisites Check Passed](assets/07-dc02-adds-prerequisites-passed.png)
+
+#### PowerShell Promotion Deployment Script
 ```powershell
 # Windows PowerShell Script for AD DS Replica Domain Controller Deployment
 Import-Module ADDSDeployment
@@ -195,6 +202,9 @@ Install-ADDSDomainController `
     -SysvolPath "C:\Windows\SYSVOL" `
     -Force:$true
 ```
+
+![CORP-DC02 PowerShell Promotion Deployment Automation](assets/08-dc02-powershell-deployment-script.png)
+
 
 ---
 
