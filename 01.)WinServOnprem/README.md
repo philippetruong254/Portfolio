@@ -299,6 +299,37 @@ Standard Windows 11 installers enforce strict TPM 2.0 and Secure Boot checks tha
   * `BypassRAMCheck` = `1`
 * **VirtIO SCSI Storage Drivers:** Storage drivers were paravirtualized via Red Hat `viostor` (`w11/amd64`) from `cdrom2.iso`, maximizing disk I/O throughput compared to legacy IDE or SATA emulation.
 
+### 7.4. Out-of-Band Console Input Automation (AutoHotkey Keystroke Bridge)
+Before guest integration utilities (such as QEMU Guest Agent or SPICE tools) are initialized inside a newly deployed virtual machine, EVE-NG VNC consoles lack bidirectional clipboard synchronization. Manually retyping complex PowerShell cmdlets, registry paths, and enterprise passwords directly into a raw VNC canvas is slow and error-prone.
+
+To eliminate this operational hurdle, an out-of-band keystroke automation bridge was authored using **AutoHotkey v2.0**. The script binds to `Ctrl + F8`, accesses the host clipboard, and streams the string as simulated raw hardware scan codes with calibrated millisecond delays (`SetKeyDelay 20, 10`), guaranteeing that QEMU registers every keystroke without character drops or scrambled text:
+
+```autohotkey
+#Requires AutoHotkey v2.0
+
+; --- Tunable Parameters ---
+keyDelay := 20        ; Gap between keystrokes in ms (increase if characters drop or scramble)
+pressDuration := 10   ; Time key is held down in ms (increase if guest misses keypresses entirely)
+leadInSleep := 500    ; Brief pause after pressing hotkey so Ctrl releases cleanly (in ms)
+; ---------------------------
+
+; Ctrl + F8 to type clipboard contents
+^F8::
+{
+    ; Allow physical Ctrl key to release so it doesn't accidentally trigger guest shortcuts
+    KeyWait "Control"
+    Sleep leadInSleep
+
+    SetKeyDelay keyDelay, pressDuration
+    SendEvent "{Raw}" . A_Clipboard
+}
+
+; Optional: Press Escape to stop typing if it gets out of control
+Esc::ExitApp
+```
+
+![AutoHotkey v2.0 VNC Keystroke Bridge Script](assets/13-autohotkey-vnc-clipboard-bridge.png)
+
 ---
 
 ## 8. Author & Copyright Notice
