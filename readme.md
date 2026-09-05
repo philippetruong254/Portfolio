@@ -40,4 +40,3 @@ All labs are designed to solve real-world enterprise operational challenges: hig
 
 Authored and copyrighted © 2026 Philippe Truong. All rights reserved.  
 All architecture topologies, design documentation, and original configuration templates are the property of Philippe Truong.
-
