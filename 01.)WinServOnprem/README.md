@@ -256,19 +256,14 @@ Destination DSA     largest delta    fails/total %%   error
 
 A critical component of this laboratory deployment was engineering the hypervisor emulation layer to host enterprise-grade modern guest operating systems (Windows 11 Enterprise) within an EVE-NG Bare-Metal/KVM environment.
 
-### 7.1. High-Speed Image Ingestion & Storage Analysis
-To stage the installation media on the virtualization host (`192.168.3.103`), OpenSSH `scp` was leveraged to securely transfer the operating system media across a multi-gigabit network link directly to the hypervisor backing store.
+### 7.1. Media Ingestion & Staging
+To stage the installation media on the EVE-NG virtualization host (`192.168.3.103`), OpenSSH `scp` was used to transfer the Windows 11 ISO and VirtIO drivers directly into the QEMU image library:
 
 ```powershell
-# High-speed secure copy to EVE-NG QEMU library
+# Transfer Windows 11 Enterprise ISO and VirtIO drivers to EVE-NG
 scp .\26200.6584.250915-1905.25h2_ge_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso root@192.168.3.103:/opt/unetlab/addons/qemu/win-11-pro/cdrom.iso
 scp .\virtio-win-0.1.302.iso root@192.168.3.103:/opt/unetlab/addons/qemu/win-11-pro/cdrom2.iso
 ```
-
-* **Network Performance:** The transfer sustained **`203 MB/s` (~1.62 Gbps)**, fully utilizing the 2.5 GbE physical network link without transport bottlenecks.
-* **Storage Subsystem (ZFS RAID-Z2):** The backing storage pool on the virtualization host runs ZFS in a RAID-Z2 dual-parity configuration. The sustained sequential transfer validated that ZFS Transaction Groups (TXGs) flushed smoothly from RAM dirty buffers to the vdev array without disk I/O wait stalls or parity calculation CPU throttling.
-
-![High-Speed ISO SCP Ingestion into EVE-NG Storage Pool](assets/12-scp-highspeed-iso-transfer.png)
 
 ### 7.2. QEMU Image Structure & Thin-Provisioned Storage
 Within the Linux virtualization host, the guest environment was structured according to EVE-NG QEMU naming standards (`/opt/unetlab/addons/qemu/win-11-pro/`):
