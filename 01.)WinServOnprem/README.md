@@ -252,7 +252,61 @@ Destination DSA     largest delta    fails/total %%   error
 
 ---
 
-## 7. Author & Copyright Notice
+## 7. Hypervisor & Emulation Engineering (EVE-NG / QEMU / ZFS)
+
+A critical component of this laboratory deployment was engineering the hypervisor emulation layer to host enterprise-grade modern guest operating systems (Windows 11 Enterprise) within an EVE-NG Bare-Metal/KVM environment.
+
+### 7.1. High-Speed Image Ingestion & Storage Analysis
+To stage the installation media on the virtualization host (`192.168.3.103`), OpenSSH `scp` was leveraged to securely transfer the operating system media across a multi-gigabit network link directly to the hypervisor backing store.
+
+```powershell
+# High-speed secure copy to EVE-NG QEMU library
+scp .\26200.6584.250915-1905.25h2_ge_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso root@192.168.3.103:/opt/unetlab/addons/qemu/win-11-pro/cdrom.iso
+scp .\virtio-win-0.1.302.iso root@192.168.3.103:/opt/unetlab/addons/qemu/win-11-pro/cdrom2.iso
+```
+
+* **Network Performance:** The transfer sustained **`203 MB/s` (~1.62 Gbps)**, fully utilizing the 2.5 GbE physical network link without transport bottlenecks.
+* **Storage Subsystem (ZFS RAID-Z2):** The backing storage pool on the virtualization host runs ZFS in a RAID-Z2 dual-parity configuration. The sustained sequential transfer validated that ZFS Transaction Groups (TXGs) flushed smoothly from RAM dirty buffers to the vdev array without disk I/O wait stalls or parity calculation CPU throttling.
+
+![High-Speed ISO SCP Ingestion into EVE-NG Storage Pool](assets/12-scp-highspeed-iso-transfer.png)
+
+### 7.2. QEMU Image Structure & Thin-Provisioned Storage
+Within the Linux virtualization host, the guest environment was structured according to EVE-NG QEMU naming standards (`/opt/unetlab/addons/qemu/win-11-pro/`):
+
+1. **Thin-Provisioned System Disk:** A 60 GB thin-provisioned QCOW2 virtual disk was provisioned, initializing with a minimal metadata footprint of only 193 KB:
+   ```bash
+   /opt/qemu/bin/qemu-img create -f qcow2 virtioa.qcow2 60G
+   ```
+2. **Dual Optical Media Mounting:**
+   * `cdrom.iso` (6.7 GB): Windows 11 Enterprise Evaluation (Build 26200.6584).
+   * `cdrom2.iso` (837 MB): Red Hat VirtIO paravirtualized drivers (`virtio-win-0.1.302`).
+3. **Permissions Remediation:** EVE-NG's permission wrapper was executed to grant correct UID/GID execution privileges across QEMU unprivileged hypervisor processes and the web daemon:
+   ```bash
+   /opt/unetlab/wrappers/unl_wrapper -a fixpermissions
+   ```
+
+```text
+root@eora:/opt/unetlab/addons/qemu/win-11-pro# ls -lh /opt/unetlab/addons/qemu/win-11-pro/
+total 7.5G
+-rw-r--r-- 1 root root 837M Sep  5 19:58 cdrom2.iso
+-rw-r--r-- 1 root root 6.7G Sep  5 19:56 cdrom.iso
+-rw-r--r-- 1 root root 193K Sep  5 19:54 virtioa.qcow2
+root@eora:/opt/unetlab/addons/qemu/win-11-pro# /opt/unetlab/wrappers/unl_wrapper -a fixpermissions
+```
+
+![EVE-NG QEMU Windows 11 Image Directory and Permission Wrapper](assets/11-eve-ng-qemu-win11-image-prep.png)
+
+### 7.3. QEMU Windows 11 TPM & Storage Driver Optimization
+Standard Windows 11 installers enforce strict TPM 2.0 and Secure Boot checks that halt deployment in virtualized KVM/QEMU nodes. To streamline lab provisioning without overhead:
+* **Pre-Installation Registry Bypass:** During setup initialization, `Shift + F10` was triggered to inject `LabConfig` registry parameters:
+  * `BypassTPMCheck` = `1`
+  * `BypassSecureBootCheck` = `1`
+  * `BypassRAMCheck` = `1`
+* **VirtIO SCSI Storage Drivers:** Storage drivers were paravirtualized via Red Hat `viostor` (`w11/amd64`) from `cdrom2.iso`, maximizing disk I/O throughput compared to legacy IDE or SATA emulation.
+
+---
+
+## 8. Author & Copyright Notice
 
 Authored and copyrighted © 2026 Philippe Truong. All rights reserved.  
 All topology designs, configuration templates, and implementation documentation are the intellectual property of Philippe Truong.
