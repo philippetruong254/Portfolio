@@ -230,7 +230,25 @@ Success rate is 100 percent (5/5), round-trip min/avg/max = 8/9/12 ms
 ![Cisco Core Switch Ping Verification to Transit Gateway and Internet](assets/03-cisco-core-sw01-ping-verification.png)
 
 ### 6.2. Active Directory Multi-Master Replication Health
-*(Diagnostic logs will be populated upon DC01 and DC02 online verification).*
+Active Directory multi-master replication was validated between `CORPDC01` and `CORPDC02` across all five directory partitions (Configuration, Schema, Domain `corp.local`, Forest DNS Zones, and Domain DNS Zones) using `repadmin /replsummary`. Both domain controllers achieved 100% replication success with **0 fails / 0 errors**.
+
+```text
+PS C:\Users\Administrator> repadmin /replsummary
+Replication Summary Start Time: 2026-09-05 14:20:15
+
+Beginning data collection for replication summary, this may take a while:
+  .....
+
+Source DSA          largest delta    fails/total %%   error
+ CORPDC01                  04m:15s    0 /   5    0
+ CORPDC02                  03m:19s    0 /   5    0
+
+Destination DSA     largest delta    fails/total %%   error
+ CORPDC01                  03m:19s    0 /   5    0
+ CORPDC02                  04m:15s    0 /   5    0
+```
+
+![Active Directory Dual-DC Replication Summary Verification](assets/10-ad-replsummary-verification.png)
 
 ---
 
