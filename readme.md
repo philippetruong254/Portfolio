@@ -20,8 +20,8 @@ All labs are designed to solve real-world enterprise operational challenges: hig
 | :--- | :--- | :--- | :---: |
 | **[01. On-Premises Core Infrastructure](./01.\)WinServOnprem/)** | Systems & Core Routing | Dual Windows Server 2022 DCs, Active Directory Domain Services (AD DS), AD-Integrated DNS Replication, Cisco L3 Inter-VLAN Routing, DHCP Option 6 | 🟡 In Progress |
 | **[02. SD-WAN & Edge Redundancy](./02.\)SDWan/)** | Enterprise WAN / Security | Dual-WAN Failover (Primary ISP + Secondary Backup), IP SLA Probes, Route Tracking, Fortinet / Cisco Edge | ⚪ Planned |
-| **[03. Microsoft Entra ID](./03.\)EntraID/)** | Cloud Identity & Security | User & Security Group Governance, Role-Based Access Control (RBAC), Conditional Access (MFA & Compliance Enforcement) | ⚪ Planned |
-| **[04. Azure Hub-and-Spoke Cloud Network](./4.\)AzureHub%26Spoke/)** | Cloud Infrastructure | Azure Virtual Networks (VNets), Hub-and-Spoke Architecture, VNet Peering, Network Security Groups (NSGs), User Defined Routes (UDRs) | ⚪ Planned |
+| **[03. Microsoft Entra ID](./03.\)EntraID/)** | Cloud Identity & Security | User & Security Group Governance, Role-Based Access Control (RBAC), Conditional Access (MFA & Compliance Enforcement) | 🟡 In Progress |
+| **[04. Azure Hub-and-Spoke Cloud Network](./4.\)AzureHub%26Spoke/)** | Cloud Infrastructure | Azure Virtual Networks (VNets), Hub-and-Spoke Architecture, VNet Peering, Network Security Groups (NSGs), User Defined Routes (UDRs) | 🟡 In Progress |
 | **[05. Hybrid Cloud IPsec S2S VPN](./5.\)HybridS2SVPN/)** | Hybrid Cloud Connectivity | Route-Based Site-to-Site IPsec VPN (IKEv2), Dynamic Routing over IPsec (BGP ASN 65001 <-> 65515), Hybrid Conditional DNS Forwarding | ⚪ Planned |
 
 ---
