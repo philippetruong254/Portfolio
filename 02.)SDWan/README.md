@@ -93,7 +93,7 @@ config system interface
 end
 ```
 
-![FortiGate 40F Physical and Aggregate Interface Architecture](assets/04-fortigate-interface-configuration.png)
+[![FortiGate 40F Physical and Aggregate Interface Architecture (Click to expand)](assets/04-fortigate-interface-configuration.png)](assets/04-fortigate-interface-configuration.png)
 
 ---
 
@@ -138,7 +138,7 @@ end
 > [!NOTE]
 > Static Route `edit 2` on the FortiGate points `10.10.10.0/24` to `192.168.3.13` (`vlan3_internal`), establishing inter-lab connectivity directly back to the on-premises Active Directory Domain Controller (`CORPDC01`) deployed in [Lab 01](../01.\)WinServOnprem/).
 
-![FortiGate SD-WAN Member Interfaces and Gateways](assets/01-fortigate-sdwan-members-gateways.png)
+[![FortiGate SD-WAN Member Interfaces and Gateways (Click to expand)](assets/01-fortigate-sdwan-members-gateways.png)](assets/01-fortigate-sdwan-members-gateways.png)
 
 ---
 
@@ -174,7 +174,7 @@ end
 * **Packet Loss Threshold:** <= 2%
 * **Evaluation Criteria:** Combined cost factor measuring latency, jitter, and packet loss. If a link exceeds these bounds, FortiOS immediately flags the member as out-of-SLA and withdraws its route.
 
-![FortiGate Performance SLA Configuration](assets/03-fortigate-sdwan-performance-sla.png)
+[![FortiGate Performance SLA Configuration (Click to expand)](assets/03-fortigate-sdwan-performance-sla.png)](assets/03-fortigate-sdwan-performance-sla.png)
 
 ---
 
@@ -207,7 +207,7 @@ config system sdwan
 end
 ```
 
-![FortiGate SD-WAN Steering Rule](assets/02-fortigate-sdwan-rules-corporate-testing.png)
+[![FortiGate SD-WAN Steering Rule (Click to expand)](assets/02-fortigate-sdwan-rules-corporate-testing.png)](assets/02-fortigate-sdwan-rules-corporate-testing.png)
 
 ---
 
@@ -234,7 +234,7 @@ config firewall policy
 end
 ```
 
-![FortiGate Firewall Policy for SD-WAN Outbound NAT](assets/05-fortigate-firewall-policy-sdwan.png)
+[![FortiGate Firewall Policy for SD-WAN Outbound NAT (Click to expand)](assets/05-fortigate-firewall-policy-sdwan.png)](assets/05-fortigate-firewall-policy-sdwan.png)
 
 ---
 
