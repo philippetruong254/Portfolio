@@ -24,17 +24,6 @@ All labs are designed to solve real-world enterprise operational challenges: hig
 | **[04. Azure Hub-and-Spoke Cloud Network](./4.\)AzureHub%26Spoke/)** | Cloud Infrastructure | Azure Virtual Networks (VNets), Hub-and-Spoke Architecture, VNet Peering, Network Security Groups (NSGs), User Defined Routes (UDRs) | 🟡 In Progress |
 | **[05. Hybrid Cloud IPsec S2S VPN](./5.\)HybridS2SVPN/)** | Hybrid Cloud Connectivity | Route-Based Site-to-Site IPsec VPN (IKEv2), Dynamic Routing over IPsec (BGP ASN 65001 <-> 65515), Hybrid Conditional DNS Forwarding | ⚪ Planned |
 
----
-
-## Technical Skills Matrix
-
-* **Routing & Switching:** Cisco IOS-XE, Inter-VLAN Routing (SVIs), OSPF, BGP, 802.1Q Trunking, EtherChannel, DHCP Relay / IP Helper.
-* **Network Security & WAN:** Route-based IPsec VPNs, IKEv2, NAT/PAT, Access Control Lists (ACLs), Stateful Firewall Inspection, Dual-WAN Failover with IP SLA.
-* **Directory Services & Systems:** Windows Server 2022, Active Directory Domain Services, AD-Integrated DNS, Group Policy Objects (GPOs), FSMO Roles, DHCP Scope & Options.
-* **Cloud & Identity:** Microsoft Azure Virtual Networks, Hub-Spoke Peering, NSG Security Rules, Microsoft Entra ID (Azure AD), Conditional Access Policies, Privileged Identity Management (PIM).
-* **Virtualization & Tooling:** EVE-NG Professional, Wireshark Packet Analysis, PowerShell Automation, Git & GitHub.
-
----
 
 ## Author & Copyright
 
