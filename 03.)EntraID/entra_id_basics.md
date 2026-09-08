@@ -163,7 +163,7 @@ Understanding how devices register in Entra ID is critical for network administr
 
 ---
 
-## 6. Senior Admin Interview Quick-Card
+## 6. Enterprise Identity Operations & Architecture FAQ
 
 * **Q: If our on-prem WAN connection drops, can users still log into Office 365?**
   * *A*: Yes, provided **Password Hash Synchronization (PHS)** is enabled. Entra ID authenticates users directly against cloud-stored hashes without needing to reach on-prem Domain Controllers.

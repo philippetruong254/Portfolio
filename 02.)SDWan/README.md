@@ -238,20 +238,7 @@ end
 
 ---
 
-## 7. Senior Network Administrator Technical Talking Points
-
-1. **Production Change Isolation & Risk Mitigation:**
-   * Demonstrates the ability to stage, configure, and validate complex routing paradigms on live production appliances without risking outage to corporate WAN circuits (`AT&T WAN`).
-2. **Overcoming Port Density Limits:**
-   * Explains how combining physical links (`a` + `lan3`) into an 802.3ad LACP aggregate optimizes port allocation on compact edge appliances, ensuring high-throughput LAN connectivity while freeing up interfaces for multi-WAN edge ingestion.
-3. **Dynamic Path Selection vs. Legacy Routing:**
-   * Contrasts legacy floating static routes (which only react to hard physical link-down states) with SD-WAN Performance SLAs that actively monitor brownouts, packet loss, and jitter to execute sub-second path failover.
-4. **Decoupled Security Policy Design:**
-   * Illustrates how zones (`virtual-wan-link`) simplify firewall rule administration: new WAN providers can be added to the zone with zero modifications required to existing firewall policies.
-
----
-
-## 8. Author & Copyright Notice
+## 7. Author & Copyright Notice
 
 Authored and copyrighted © 2026 Philippe Truong. All rights reserved.  
 All architecture topologies, design documentation, and implementation guides are the property of Philippe Truong.

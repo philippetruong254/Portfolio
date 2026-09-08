@@ -208,7 +208,7 @@ Install-ADDSDomainController `
 
 ---
 
-## 6. Verification & Proof of Competence
+## 6. Verification & Operational Health
 
 ### 6.1. Network Connectivity & Routing Verification
 Direct ICMP verification from the Cisco Layer 3 switch confirming inter-subnet gateway reachability to `EDGE-RTR01` (`10.10.9.1`) and external WAN egress to the public internet (`8.8.8.8`).
