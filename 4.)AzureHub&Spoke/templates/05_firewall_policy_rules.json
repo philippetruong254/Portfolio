@@ -1,0 +1,125 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "eastus"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+      "apiVersion": "2023-09-01",
+      "name": "afw-policy-eastus/DefaultNetworkRuleCollectionGroup",
+      "location": "[parameters('location')]",
+      "properties": {
+        "priority": 200,
+        "ruleCollections": [
+          {
+            "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+            "name": "net-rc-core-infrastructure",
+            "priority": 200,
+            "action": {
+              "type": "Allow"
+            },
+            "rules": [
+              {
+                "ruleType": "NetworkRule",
+                "name": "allow-dns",
+                "ipProtocols": [
+                  "TCP",
+                  "UDP"
+                ],
+                "sourceAddresses": [
+                  "10.0.0.0/8"
+                ],
+                "destinationAddresses": [
+                  "*"
+                ],
+                "destinationPorts": [
+                  "53"
+                ]
+              },
+              {
+                "ruleType": "NetworkRule",
+                "name": "allow-ntp",
+                "ipProtocols": [
+                  "UDP"
+                ],
+                "sourceAddresses": [
+                  "10.0.0.0/8"
+                ],
+                "destinationAddresses": [
+                  "*"
+                ],
+                "destinationPorts": [
+                  "123"
+                ]
+              },
+              {
+                "ruleType": "NetworkRule",
+                "name": "allow-spoke-transit-icmp",
+                "ipProtocols": [
+                  "ICMP"
+                ],
+                "sourceAddresses": [
+                  "10.102.1.0/24"
+                ],
+                "destinationAddresses": [
+                  "10.101.1.0/24"
+                ],
+                "destinationPorts": [
+                  "*"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+      "apiVersion": "2023-09-01",
+      "name": "afw-policy-eastus/DefaultApplicationRuleCollectionGroup",
+      "location": "[parameters('location')]",
+      "properties": {
+        "priority": 300,
+        "ruleCollections": [
+          {
+            "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+            "name": "app-rc-web-egress",
+            "priority": 300,
+            "action": {
+              "type": "Allow"
+            },
+            "rules": [
+              {
+                "ruleType": "ApplicationRule",
+                "name": "allow-os-updates",
+                "protocols": [
+                  {
+                    "protocolType": "Http",
+                    "port": 80
+                  },
+                  {
+                    "protocolType": "Https",
+                    "port": 443
+                  }
+                ],
+                "sourceAddresses": [
+                  "10.0.0.0/8"
+                ],
+                "targetFqdns": [
+                  "*.microsoft.com",
+                  "*.windowsupdate.com",
+                  "*.github.com"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

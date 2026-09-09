@@ -1,0 +1,101 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": { "type": "string" },
+        "resourceGroup": { "type": "string" },
+        "azureFirewallName": { "type": "string" },
+        "azureFirewallTier": { "type": "string" },
+        "vnetName": { "type": "string" },
+        "vnetAddressSpace": { "type": "string" },
+        "vnetAddressSpaceV6": { "type": "string" },
+        "subnetAddressSpace": { "type": "string" },
+        "subnetAddressSpaceV6": { "type": "string" },
+        "zones": { "type": "array" },
+        "subnetId": { "type": "string" },
+        "azureFirewallManagementSubnet": { "type": "string" },
+        "tunnelingSubnetAddressSpace": { "type": "string" },
+        "managementSubnetId": { "type": "string" },
+        "managementPublicIpAddressName": { "type": "string" },
+        "managementPublicIpZones": { "type": "array" },
+        "publicIpAddressName": { "type": "string" },
+        "publicIpZones": { "type": "array" },
+        "publicIpV6AddressName": { "type": "string" }
+    },
+    "variables": {
+        "networkApiVersion": "?api-version=2021-05-01"
+    },
+    "resources": [
+        {
+            "apiVersion": "2020-08-01",
+            "type": "Microsoft.Network/publicIpAddresses",
+            "name": "[parameters('managementPublicIpAddressName')]",
+            "location": "[parameters('location')]",
+            "sku": { "name": "Standard" },
+            "zones": "[parameters('managementPublicIpZones')]",
+            "properties": {
+                "publicIPAllocationMethod": "Static"
+            },
+            "tags": {}
+        },
+        {
+            "apiVersion": "2020-08-01",
+            "type": "Microsoft.Network/publicIpAddresses",
+            "name": "[parameters('publicIpAddressName')]",
+            "location": "[parameters('location')]",
+            "sku": { "name": "Standard" },
+            "zones": "[parameters('publicIpZones')]",
+            "properties": {
+                "publicIPAllocationMethod": "Static",
+                "publicIPAddressVersion": "IPv4"
+            },
+            "tags": {}
+        },
+        {
+            "apiVersion": "2025-09-01",
+            "type": "Microsoft.Network/firewallPolicies",
+            "resources": [],
+            "properties": {
+                "sku": { "tier": "Basic" }
+            },
+            "name": "afw-policy-eastus",
+            "location": "eastus",
+            "tags": {}
+        },
+        {
+            "apiVersion": "2025-09-01",
+            "type": "Microsoft.Network/azureFirewalls",
+            "name": "[parameters('azureFirewallName')]",
+            "location": "[parameters('location')]",
+            "zones": "[parameters('zones')]",
+            "dependsOn": [
+                "[resourceId(parameters('resourceGroup'), 'Microsoft.Network/publicIpAddresses', parameters('managementPublicIpAddressName'))]",
+                "[resourceId(parameters('resourceGroup'), 'Microsoft.Network/publicIpAddresses', parameters('publicIpAddressName'))]",
+                "[resourceId(parameters('resourceGroup'), 'Microsoft.Network/firewallPolicies', 'afw-policy-eastus')]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "[parameters('publicIpAddressName')]",
+                        "properties": {
+                            "subnet": { "id": "[parameters('subnetId')]" },
+                            "publicIpAddress": { "id": "[resourceId(parameters('resourceGroup'), 'Microsoft.Network/publicIPAddresses', parameters('publicIpAddressName'))]" }
+                        }
+                    }
+                ],
+                "sku": { "tier": "[parameters('azureFirewallTier')]" },
+                "managementIpConfiguration": {
+                    "name": "[parameters('managementPublicIpAddressName')]",
+                    "properties": {
+                        "subnet": { "id": "[parameters('managementSubnetId')]" },
+                        "publicIPAddress": { "id": "[resourceId(parameters('resourceGroup'), 'Microsoft.Network/publicIpAddresses', parameters('managementPublicIpAddressName'))]" }
+                    }
+                },
+                "firewallPolicy": {
+                    "id": "[resourceId(parameters('resourceGroup'), 'Microsoft.Network/firewallPolicies', 'afw-policy-eastus')]"
+                }
+            },
+            "tags": {}
+        }
+    ]
+}
