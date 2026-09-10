@@ -1,0 +1,100 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-08-01/tenantDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultValue": "eastus"
+        },
+        "connectionType": {
+            "type": "string",
+            "defaultValue": "IPsec"
+        },
+        "virtualNetworkGatewayId1": {
+            "type": "string"
+        },
+        "connectionName": {
+            "type": "string",
+            "defaultValue": "conn-hub-to-fgt40f"
+        },
+        "useLocalAzureIpAddress": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "enableBgp": {
+            "type": "bool",
+            "defaultValue": true
+        },
+        "connectionProtocol": {
+            "type": "string",
+            "defaultValue": "IKEv2"
+        },
+        "ipsecPolicies": {
+            "type": "array",
+            "defaultValue": []
+        },
+        "dpdTimeoutSeconds": {
+            "type": "int",
+            "defaultValue": 45
+        },
+        "connectionMode": {
+            "type": "string",
+            "defaultValue": "Default"
+        },
+        "gatewayCustomBgpIpAddresses": {
+            "type": "array",
+            "defaultValue": []
+        },
+        "localNetworkGatewayId2": {
+            "type": "string"
+        },
+        "ingressNatRules": {
+            "type": "array",
+            "defaultValue": []
+        },
+        "egressNatRules": {
+            "type": "array",
+            "defaultValue": []
+        },
+        "sharedKey": {
+            "type": "securestring",
+            "defaultValue": "Testing123"
+        }
+    },
+    "resources": [
+        {
+            "name": "[parameters('connectionName')]",
+            "type": "Microsoft.Network/connections",
+            "apiVersion": "2025-07-01",
+            "location": "[parameters('location')]",
+            "tags": {},
+            "dependsOn": [],
+            "properties": {
+                "connectionType": "[parameters('connectionType')]",
+                "virtualNetworkGateway1": {
+                    "id": "[parameters('virtualNetworkGatewayId1')]"
+                },
+                "useLocalAzureIpAddress": "[parameters('useLocalAzureIpAddress')]",
+                "enableBgp": "[parameters('enableBgp')]",
+                "connectionProtocol": "[parameters('connectionProtocol')]",
+                "authenticationType": "PSK",
+                "sharedKey": "[parameters('sharedKey')]",
+                "ipsecPolicies": "[parameters('ipsecPolicies')]",
+                "dpdTimeoutSeconds": "[parameters('dpdTimeoutSeconds')]",
+                "connectionMode": "[parameters('connectionMode')]",
+                "ingressNatRules": "[parameters('ingressNatRules')]",
+                "egressNatRules": "[parameters('egressNatRules')]",
+                "localNetworkGateway2": {
+                    "id": "[parameters('localNetworkGatewayId2')]"
+                },
+                "gatewayCustomBgpIpAddresses": [
+                    {
+                        "ipConfigurationId": "[concat(parameters('virtualNetworkGatewayId1'), '/ipConfigurations/default')]",
+                        "customBgpIpAddress": "169.254.21.2"
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}

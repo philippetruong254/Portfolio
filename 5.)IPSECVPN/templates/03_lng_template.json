@@ -1,0 +1,62 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultValue": "eastus"
+        },
+        "localNetworkGatewayName": {
+            "type": "string",
+            "defaultValue": "lng-onprem-fgt40f"
+        },
+        "gatewayIpAddress": {
+            "type": "string",
+            "defaultValue": "99.61.178.164"
+        },
+        "fqdn": {
+            "type": "string",
+            "defaultValue": "nini.island.fortiddns.com"
+        },
+        "localAddressPrefixes": {
+            "type": "array",
+            "defaultValue": [
+                "192.168.3.0/24"
+            ]
+        },
+        "asn": {
+            "type": "int",
+            "defaultValue": 65001
+        },
+        "bgpPeeringAddress": {
+            "type": "string",
+            "defaultValue": "169.254.21.1"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/localNetworkGateways",
+            "apiVersion": "2023-09-01",
+            "name": "[parameters('localNetworkGatewayName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "localNetworkAddressSpace": {
+                    "addressPrefixes": "[parameters('localAddressPrefixes')]"
+                },
+                "gatewayIpAddress": "[parameters('gatewayIpAddress')]",
+                "fqdn": "[parameters('fqdn')]",
+                "bgpSettings": {
+                    "asn": "[parameters('asn')]",
+                    "bgpPeeringAddress": "[parameters('bgpPeeringAddress')]",
+                    "peerWeight": 0
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "localNetworkGatewayId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Network/localNetworkGateways', parameters('localNetworkGatewayName'))]"
+        }
+    }
+}

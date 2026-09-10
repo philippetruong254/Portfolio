@@ -1,0 +1,111 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "gatewayType": {
+            "type": "string",
+            "defaultValue": "Vpn",
+            "allowedValues": [
+                "Vpn",
+                "ExpressRoute"
+            ]
+        },
+        "sku": {
+            "type": "string"
+        },
+        "vpnGatewayGeneration": {
+            "type": "string"
+        },
+        "vpnType": {
+            "type": "string",
+            "defaultValue": "RouteBased",
+            "allowedValues": [
+                "RouteBased",
+                "PolicyBased"
+            ]
+        },
+        "subnetId": {
+            "type": "string"
+        },
+        "newPublicIpAddressName": {
+            "type": "string"
+        },
+        "enableBgp": {
+            "type": "bool"
+        },
+        "asn": {
+            "type": "int"
+        },
+        "customBgpIpAddress": {
+            "type": "Array"
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2025-07-01",
+            "name": "[parameters('name')]",
+            "type": "Microsoft.Network/virtualNetworkGateways",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIPAddresses/', parameters('newPublicIpAddressName'))]"
+            ],
+            "tags": {},
+            "properties": {
+                "gatewayType": "[parameters('gatewayType')]",
+                "ipConfigurations": [
+                    {
+                        "name": "default",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[parameters('subnetId')]"
+                            },
+                            "publicIpAddress": {
+                                "id": "[resourceId('rg-enterprise-networking', 'Microsoft.Network/publicIPAddresses', parameters('newPublicIpAddressName'))]"
+                            }
+                        }
+                    }
+                ],
+                "enableBgp": "[parameters('enableBgp')]",
+                "bgpSettings": {
+                    "asn": "[parameters('asn')]",
+                    "bgpPeeringAddresses": [
+                        {
+                            "ipconfigurationId": "/subscriptions/0d0cf8c7-8950-447a-a0fa-ee31c9582175/resourceGroups/rg-enterprise-networking/providers/Microsoft.Network/virtualNetworkGateways/vng-hub-eastus/ipConfigurations/default",
+                            "customBgpIpAddresses": "[parameters('customBgpIpAddress')]"
+                        }
+                    ]
+                },
+                "vpnType": "[parameters('vpnType')]",
+                "vpnGatewayGeneration": "[parameters('vpnGatewayGeneration')]",
+                "sku": {
+                    "name": "[parameters('sku')]",
+                    "tier": "[parameters('sku')]"
+                }
+            }
+        },
+        {
+            "apiVersion": "2020-08-01",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('newPublicIpAddressName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "publicIPAllocationMethod": "Static"
+            },
+            "sku": {
+                "name": "Standard"
+            },
+            "zones": [
+                "1",
+                "2",
+                "3"
+            ]
+        }
+    ]
+}
