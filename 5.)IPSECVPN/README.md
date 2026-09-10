@@ -202,48 +202,58 @@ During deployment, two major enterprise networking challenges were encountered, 
 ## 5. Implementation & Verification Gallery
 
 <details>
-<summary><b>📷 Expand to View Full Sequential Verification Gallery (17 Verification Records)</b></summary>
+<summary><b>📷 Expand to View Full Sequential Verification Gallery (33 Verification Records)</b></summary>
 
 <br>
 
-### 1. Azure Site-to-Site Connection Provisioning
-| Step / Component | Portal & CLI Verification Evidence |
+### 1. Physical Fortinet FortiGate 40F Configuration (FortiOS 7.6.7 Mature)
+| Step / Component | Physical Firewall Verification Evidence |
 | :--- | :--- |
-| **00. Azure Resource Visualizer Topology** | [![Azure Topology](./assets/00_azure_resource_visualizer_topology.png)](./assets/00_azure_resource_visualizer_topology.png)<br>*Full resource graph linking Hub, Spokes, Firewall, Route Tables, and On-Premises.* |
-| **01. Connection Basics** | [![Connection Basics](./assets/01_connection_basics.png)](./assets/01_connection_basics.png)<br>*Basics blade specifying Site-to-site (IPsec) and resource group binding.* |
-| **02. Connection Settings & BGP APIPA** | [![Connection Settings](./assets/02_connection_settings.png)](./assets/02_connection_settings.png)<br>*Binding vng-hub-eastus to lng-onprem-fgt40f with BGP APIPA 169.254.21.2.* |
-| **03. ARM Validation Passed** | [![Validation Passed](./assets/03_connection_validation_passed.png)](./assets/03_connection_validation_passed.png)<br>*Azure ARM engine validation passing with zero configuration errors.* |
-| **04. Custom IPsec/IKE Policy Enforcement** | [![Custom IPsec Policy](./assets/04_azure_custom_ipsec_policy.png)](./assets/04_azure_custom_ipsec_policy.png)<br>*Custom crypto policy: AES256, SHA256, DHGroup14, and PFS2048.* |
+| **FGT-01. Phase 1 Gateway Settings** | [![Phase 1 Gateway](./assets/fgt_01_phase1_config.png)](./assets/fgt_01_phase1_config.png)<br>*Phase 1 configuration: Remote Gateway 4.157.90.69, IKEv2, AT&T WAN binding, and PSK.* |
+| **FGT-02. Phase 1 Crypto Proposal** | [![Phase 1 Proposal](./assets/fgt_02_phase1_proposal.png)](./assets/fgt_02_phase1_proposal.png)<br>*Phase 1 proposal: AES256-SHA256, DH Group 14 (MODP2048), Keylife 28800s.* |
+| **FGT-03. Phase 2 Selectors & PFS** | [![Phase 2 Selectors](./assets/fgt_03_phase2_selector.png)](./assets/fgt_03_phase2_selector.png)<br>*Phase 2 selector: 0.0.0.0/0 <-> 0.0.0.0/0 (Route-based), AES256-SHA256, PFS Group 14.* |
+| **FGT-04. VTI Interface & APIPA Addressing** | [![VTI Interface IP](./assets/fgt_04_vti_interface_ip.png)](./assets/fgt_04_vti_interface_ip.png)<br>*40F_Azure_Tunn virtual interface: IP 169.254.21.1/32, Remote 169.254.21.2/30, PING enabled.* |
+| **FGT-05. Firewall Policy: LAN to Azure** | [![Policy LAN to Azure](./assets/fgt_05_policy_lan_to_azure.png)](./assets/fgt_05_policy_lan_to_azure.png)<br>*Policy 'LAN_TO_AZURE_TEST': Source vlan3_internal -> Destination 40F_Azure_Tunn (Accept).* |
+| **FGT-06. Firewall Policy: Azure to LAN** | [![Policy Azure to LAN](./assets/fgt_06_policy_azure_to_lan.png)](./assets/fgt_06_policy_azure_to_lan.png)<br>*Policy 'Azure_to_LAN': Source 40F_Azure_Tunn -> Destination vlan3_internal (Accept).* |
+| **FGT-07. Firewall Policies Table View** | [![Policies Table](./assets/fgt_07_firewall_policies_table.png)](./assets/fgt_07_firewall_policies_table.png)<br>*FortiOS policy table confirming bidirectional security rules for IPsec transit.* |
+| **FGT-08. Central SNAT Mapping** | [![Central SNAT](./assets/fgt_08_central_snat_wan_only.png)](./assets/fgt_08_central_snat_wan_only.png)<br>*Central SNAT rules strictly target WAN; tunnel traffic bypasses NAT preserving RFC 1918 IPs.* |
+| **FGT-09. BGP Global AS & Router ID** | [![BGP Global AS](./assets/fgt_09_bgp_global_asn.png)](./assets/fgt_09_bgp_global_asn.png)<br>*BGP daemon configuration: Local Autonomous System 65001, Router ID 192.168.3.1.* |
+| **FGT-10. BGP Neighbor Peering Configuration** | [![BGP Neighbor](./assets/fgt_10_bgp_neighbor_config.png)](./assets/fgt_10_bgp_neighbor_config.png)<br>*Neighbor 169.254.21.2, Remote AS 65515, 40F_Azure_Tunn binding, eBGP multihop enabled.* |
+| **FGT-11. BGP Network Prefix Announcement** | [![BGP Network](./assets/fgt_11_bgp_network_announcement.png)](./assets/fgt_11_bgp_network_announcement.png)<br>*Network announcement for on-premises subnet 192.168.3.0/24.* |
+| **FGT-12. Static Transport Route for BGP** | [![Static Route](./assets/fgt_12_static_route_bgp_transport.png)](./assets/fgt_12_static_route_bgp_transport.png)<br>*Host route 169.254.21.2/32 directed into 40F_Azure_Tunn to enable BGP TCP 179 transport.* |
 
 <br>
 
-### 2. Physical FortiGate 40F Tunnel & BGP Convergence
+### 2. Azure Cloud Infrastructure & LNG Provisioning
 | Step / Component | Portal & CLI Verification Evidence |
 | :--- | :--- |
-| **05. FortiOS IPsec Tunnel Status (GUI)** | [![Tunnel Up GUI](./assets/05_fortigate_tunnel_up_gui.png)](./assets/05_fortigate_tunnel_up_gui.png)<br>*FortiOS GUI showing 40F_Azure_Tunn with solid green 'Up' status on WAN.* |
-| **06. IPsec SAs & BGP Session (CLI)** | [![BGP Established CLI](./assets/06_fortigate_bgp_established_cli.png)](./assets/06_fortigate_bgp_established_cli.png)<br>*Phase 1/2 SAs created (80ms handshake) and BGP Neighbor 169.254.21.2 established.* |
-| **07. Dynamic Routes Learned via BGP** | [![Learned Routes CLI](./assets/07_fortigate_learned_azure_routes_bgp.png)](./assets/07_fortigate_learned_azure_routes_bgp.png)<br>*Routing table FIB showing 10.100.0.0/16 installed as 'B' (AD 20) via 169.254.21.2.* |
-| **08. On-Premises Route Advertised to Azure** | [![Advertised Routes CLI](./assets/08_fortigate_advertised_onprem_routes_bgp.png)](./assets/08_fortigate_advertised_onprem_routes_bgp.png)<br>*BGP engine announcing on-premises 192.168.3.0/24 prefix to Azure.* |
+| **AZ-01. Local Network Gateway Basics** | [![LNG Basics](./assets/az_lng_01_basics.png)](./assets/az_lng_01_basics.png)<br>*Local Network Gateway lng-onprem-fgt40f with FQDN and address space 192.168.3.0/24.* |
+| **AZ-02. Local Network Gateway BGP** | [![LNG BGP](./assets/az_lng_02_advanced_bgp.png)](./assets/az_lng_02_advanced_bgp.png)<br>*Configuring on-premises BGP ASN 65001 and BGP peer IP 169.254.21.1.* |
+| **AZ-03. LNG Deployment Complete** | [![LNG Complete](./assets/az_lng_03_deployment_complete.png)](./assets/az_lng_03_deployment_complete.png)<br>*Successful deployment of Local Network Gateway in rg-enterprise-networking.* |
+| **AZ-04. Azure Gateway Public IP & FinOps** | [![PIP & FinOps](./assets/az_pip_vng_overview.png)](./assets/az_pip_vng_overview.png)<br>*Static Standard Public IP 4.157.90.69 (pip-vng-eastus) and Cloud Shell script.* |
+| **AZ-05. Connection Basics** | [![Connection Basics](./assets/01_connection_basics.png)](./assets/01_connection_basics.png)<br>*Basics blade specifying Site-to-site (IPsec) and resource group binding.* |
+| **AZ-06. Connection Settings & BGP APIPA** | [![Connection Settings](./assets/02_connection_settings.png)](./assets/02_connection_settings.png)<br>*Binding vng-hub-eastus to lng-onprem-fgt40f with BGP APIPA 169.254.21.2.* |
+| **AZ-07. ARM Validation Passed** | [![Validation Passed](./assets/03_connection_validation_passed.png)](./assets/03_connection_validation_passed.png)<br>*Azure ARM engine validation passing with zero configuration errors.* |
+| **AZ-08. Custom IPsec/IKE Policy Enforcement** | [![Custom IPsec Policy](./assets/04_azure_custom_ipsec_policy.png)](./assets/04_azure_custom_ipsec_policy.png)<br>*Custom crypto policy: AES256, SHA256, DHGroup14, and PFS2048.* |
+| **AZ-09. Azure Resource Visualizer Topology** | [![Azure Topology](./assets/00_azure_resource_visualizer_topology.png)](./assets/00_azure_resource_visualizer_topology.png)<br>*Full resource graph linking Hub, Spokes, Firewall, Route Tables, and On-Premises.* |
 
 <br>
 
-### 3. Azure Gateway Telemetry & Route Propagation
+### 3. Tunnel Establishment, Gateway Transit & Multi-Cloud Route Convergence
 | Step / Component | Portal & CLI Verification Evidence |
 | :--- | :--- |
-| **09. Azure VNG BGP Peers Connected** | [![Azure BGP Peers](./assets/09_azure_vng_bgp_peers_connected.png)](./assets/09_azure_vng_bgp_peers_connected.png)<br>*Azure Virtual Network Gateway monitoring blade showing 169.254.21.1 'Connected'.* |
-| **10. FortiOS BGP Best Path Routing Table** | [![BGP Paths GUI](./assets/10_fortigate_bgp_paths_gui.png)](./assets/10_fortigate_bgp_paths_gui.png)<br>*FortiOS Routing GUI displaying 10.100.0.0/16 and 192.168.3.0/24 Best Path 'Yes'.* |
-| **11. Azure VNG Resource Overview** | [![VNG Overview](./assets/11_azure_vng_overview.png)](./assets/11_azure_vng_overview.png)<br>*Resource overview showing VpnGw1AZ SKU, East US zone redundancy, and PIP 4.157.90.69.* |
-
-<br>
-
-### 4. VNet Peering Gateway Transit & Full Multi-Spoke Convergence
-| Step / Component | Portal & CLI Verification Evidence |
-| :--- | :--- |
-| **12. Hub Gateway Transit Enabled** | [![Hub Gateway Transit](./assets/12_vnet_peering_gateway_transit_hub.png)](./assets/12_vnet_peering_gateway_transit_hub.png)<br>*Hub peering configured with 'Allow gateway or route server in vnet-hub-eastus to forward traffic'.* |
-| **13. Spoke Prod 'Use Remote Gateway'** | [![Spoke Prod Remote Gateway](./assets/13_vnet_peering_use_remote_gateway_spoke_prod.png)](./assets/13_vnet_peering_use_remote_gateway_spoke_prod.png)<br>*Production spoke peering configured with 'Enable spoke to use remote gateway'.* |
-| **14. Spoke Dev 'Use Remote Gateway'** | [![Spoke Dev Remote Gateway](./assets/14_vnet_peering_use_remote_gateway_spoke_dev.png)](./assets/14_vnet_peering_use_remote_gateway_spoke_dev.png)<br>*Development spoke peering configured with 'Enable spoke to use remote gateway'.* |
-| **15. All Cloud Spokes Learned via BGP** | [![All Spokes Learned BGP](./assets/15_fortigate_all_spoke_routes_bgp.png)](./assets/15_fortigate_all_spoke_routes_bgp.png)<br>*FIB routing table showing Hub (10.100.0.0/16), Prod (10.101.0.0/16), and Dev (10.102.0.0/16).* |
-| **16. Final BGP Peering Summary (3 Prefixes)** | [![BGP Summary 3 Prefixes](./assets/16_fortigate_bgp_summary_3_prefixes.png)](./assets/16_fortigate_bgp_summary_3_prefixes.png)<br>*FortiGate BGP summary verifying 3 prefixes active, zero queues, and stable session.* |
+| **CONV-01. FortiOS IPsec Tunnel Status (GUI)** | [![Tunnel Up GUI](./assets/05_fortigate_tunnel_up_gui.png)](./assets/05_fortigate_tunnel_up_gui.png)<br>*FortiOS GUI showing 40F_Azure_Tunn with solid green 'Up' status on WAN.* |
+| **CONV-02. IPsec SAs & BGP Session (CLI)** | [![BGP Established CLI](./assets/06_fortigate_bgp_established_cli.png)](./assets/06_fortigate_bgp_established_cli.png)<br>*Phase 1/2 SAs created (80ms handshake) and BGP Neighbor 169.254.21.2 established.* |
+| **CONV-03. Dynamic Routes Learned via BGP** | [![Learned Routes CLI](./assets/07_fortigate_learned_azure_routes_bgp.png)](./assets/07_fortigate_learned_azure_routes_bgp.png)<br>*Routing table FIB showing 10.100.0.0/16 installed as 'B' (AD 20) via 169.254.21.2.* |
+| **CONV-04. On-Premises Route Advertised to Azure** | [![Advertised Routes CLI](./assets/08_fortigate_advertised_onprem_routes_bgp.png)](./assets/08_fortigate_advertised_onprem_routes_bgp.png)<br>*BGP engine announcing on-premises 192.168.3.0/24 prefix to Azure.* |
+| **CONV-05. Azure VNG BGP Peers Connected** | [![Azure BGP Peers](./assets/09_azure_vng_bgp_peers_connected.png)](./assets/09_azure_vng_bgp_peers_connected.png)<br>*Azure Virtual Network Gateway monitoring blade showing 169.254.21.1 'Connected'.* |
+| **CONV-06. FortiOS BGP Best Path Routing Table** | [![BGP Paths GUI](./assets/10_fortigate_bgp_paths_gui.png)](./assets/10_fortigate_bgp_paths_gui.png)<br>*FortiOS Routing GUI displaying 10.100.0.0/16 and 192.168.3.0/24 Best Path 'Yes'.* |
+| **CONV-07. Azure VNG Resource Overview** | [![VNG Overview](./assets/11_azure_vng_overview.png)](./assets/11_azure_vng_overview.png)<br>*Resource overview showing VpnGw1AZ SKU, East US zone redundancy, and PIP 4.157.90.69.* |
+| **CONV-08. Hub Gateway Transit Enabled** | [![Hub Gateway Transit](./assets/12_vnet_peering_gateway_transit_hub.png)](./assets/12_vnet_peering_gateway_transit_hub.png)<br>*Hub peering configured with 'Allow gateway or route server in vnet-hub-eastus to forward traffic'.* |
+| **CONV-09. Spoke Prod 'Use Remote Gateway'** | [![Spoke Prod Remote Gateway](./assets/13_vnet_peering_use_remote_gateway_spoke_prod.png)](./assets/13_vnet_peering_use_remote_gateway_spoke_prod.png)<br>*Production spoke peering configured with 'Enable spoke to use remote gateway'.* |
+| **CONV-10. Spoke Dev 'Use Remote Gateway'** | [![Spoke Dev Remote Gateway](./assets/14_vnet_peering_use_remote_gateway_spoke_dev.png)](./assets/14_vnet_peering_use_remote_gateway_spoke_dev.png)<br>*Development spoke peering configured with 'Enable spoke to use remote gateway'.* |
+| **CONV-11. All Cloud Spokes Learned via BGP** | [![All Spokes Learned BGP](./assets/15_fortigate_all_spoke_routes_bgp.png)](./assets/15_fortigate_all_spoke_routes_bgp.png)<br>*FIB routing table showing Hub (10.100.0.0/16), Prod (10.101.0.0/16), and Dev (10.102.0.0/16).* |
+| **CONV-12. Final BGP Peering Summary (3 Prefixes)** | [![BGP Summary 3 Prefixes](./assets/16_fortigate_bgp_summary_3_prefixes.png)](./assets/16_fortigate_bgp_summary_3_prefixes.png)<br>*FortiGate BGP summary verifying 3 prefixes active, zero queues, and stable session.* |
 
 </details>
 
