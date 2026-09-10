@@ -101,6 +101,10 @@ flowchart TD
     AzureVNG <== "VNet Peering (Gateway Transit)" ==> SpokeDev
 ```
 
+### Azure Resource Visualizer Topology Map
+[![Azure Resource Visualizer](./assets/00_azure_resource_visualizer_topology.png)](./assets/00_azure_resource_visualizer_topology.png)
+*Figure 2.1: Live Azure Resource Visualizer graph showing the Hub VNet (`vnet-hub-eastus`), Azure Firewall (`afw-hub-eastus`), Spoke VNets (`vnet-spoke-prod-eastus`, `vnet-spoke-dev-eastus`), Route Tables (`rt-spoke-to-firewall`), NSGs, and the hybrid IPsec connection (`conn-hub-to-fgt40f` ⟷ `lng-onprem-fgt40f`).*
+
 ---
 
 ## 3. Cryptographic & Protocol Architecture Specification
@@ -198,13 +202,14 @@ During deployment, two major enterprise networking challenges were encountered, 
 ## 5. Implementation & Verification Gallery
 
 <details>
-<summary><b>📷 Expand to View Full Sequential Verification Gallery (16 Verification Records)</b></summary>
+<summary><b>📷 Expand to View Full Sequential Verification Gallery (17 Verification Records)</b></summary>
 
 <br>
 
 ### 1. Azure Site-to-Site Connection Provisioning
 | Step / Component | Portal & CLI Verification Evidence |
 | :--- | :--- |
+| **00. Azure Resource Visualizer Topology** | [![Azure Topology](./assets/00_azure_resource_visualizer_topology.png)](./assets/00_azure_resource_visualizer_topology.png)<br>*Full resource graph linking Hub, Spokes, Firewall, Route Tables, and On-Premises.* |
 | **01. Connection Basics** | [![Connection Basics](./assets/01_connection_basics.png)](./assets/01_connection_basics.png)<br>*Basics blade specifying Site-to-site (IPsec) and resource group binding.* |
 | **02. Connection Settings & BGP APIPA** | [![Connection Settings](./assets/02_connection_settings.png)](./assets/02_connection_settings.png)<br>*Binding vng-hub-eastus to lng-onprem-fgt40f with BGP APIPA 169.254.21.2.* |
 | **03. ARM Validation Passed** | [![Validation Passed](./assets/03_connection_validation_passed.png)](./assets/03_connection_validation_passed.png)<br>*Azure ARM engine validation passing with zero configuration errors.* |
