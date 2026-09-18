@@ -2,7 +2,7 @@
 
 **Author:** Philippe Truong  
 **Copyright:** © 2026 Philippe Truong. All rights reserved.  
-**Domain:** Enterprise Observability, SolarWinds Network Performance Monitor (NPM) / Orion Platform, Microsoft SQL Server 2022, SNMP Polling (UDP 161), SNMP Traps (UDP 162), Syslog Daemon (UDP 514), Cisco IOS Router-on-a-Stick (ROAS), Layer 2 Catalyst Switching, NAT Exemption ACLs, EVE-NG Emulation, Proxmox VE.
+**Domain:** Enterprise Observability, SolarWinds Network Performance Monitor (NPM) / Orion Platform, Microsoft SQL Server 2022, SNMP Polling (UDP 161), SNMP Traps (UDP 162), Syslog Daemon (UDP 514), NAT Exemption ACLs, EVE-NG Emulation, Proxmox VE.
 
 **Status:** 🟢 Completed  
 
@@ -10,14 +10,14 @@
 
 ## 1. Executive Summary & Objective
 
-This project designs, engineers, deploys, and validates an enterprise-grade **Network Management System (NMS)** and real-time event telemetry pipeline utilizing **SolarWinds Network Performance Monitor (NPM)** and **Microsoft SQL Server 2022** deployed within a hybrid **Proxmox Virtual Environment (PVE)** and **EVE-NG** routing/switching fabric.
+This project designs, deploys, and validates an enterprise-grade **Network Management System (NMS)** and real-time event telemetry pipeline utilizing **SolarWinds Network Performance Monitor (NPM)** and **Microsoft SQL Server 2022** deployed within a hybrid **Proxmox Virtual Environment (PVE)** and **EVE-NG** routing/switching network.
 
 While standard periodic SNMP polling (UDP 161) provides baseline interface health and bandwidth utilization metrics, critical network state transitions (link flaps, unauthorized configuration commits, and hardware faults) require instantaneous, event-driven alerting. This lab implements a complete end-to-end telemetry lifecycle:
-1. **Full-Stack NMS Deployment:** Sizing, provisioning, and tuning Microsoft SQL Server 2022 and SolarWinds Orion Platform on Windows Server 2022.
-2. **Infrastructure Telemetry Provisioning:** Configuring NTP time synchronization, SNMPv2c communities, SNMP Traps (UDP 162), and Syslog streaming (UDP 514) across Cisco IOS routers, Catalyst switches, and Linux workloads.
-3. **Automated Asset Discovery:** Executing Network Sonar subnet sweeps and onboarding all infrastructure nodes.
+1. **Basic NMS Deployment:** Provisioning, and configuring Microsoft SQL Server 2022 and SolarWinds Orion Platform on Windows Server 2022.
+2. **Infrastructure Telemetry Provisioning:** Configuring SNMPv2c communities, and SNMP Traps across Cisco IOS routers, Catalyst switches, and Linux workloads.
+3. **Automated Asset Discovery:** Executing network auditing, discovering configured nodes.
 4. **Dynamic Topology Mapping:** Constructing Orion Maps with live link throughput telemetry and Cisco CDP neighbor correlation.
-5. **Empirical Fault Injection & Verification:** Simulating physical link failures to prove sub-second alert detection, visual topology state degradation (Critical Red `(!)`), and automated recovery.
+5. **Empirical Fault Injection & Verification:** Simulating physical link failures to prove detection and visual topology state degradation and automated recovery.
 
 ```
                               [ Proxmox VE Bridge: vmbr0 / Net ]
@@ -49,16 +49,16 @@ While standard periodic SNMP polling (UDP 161) provides baseline interface healt
 
 ## 2. Network Topology & Addressing Matrix
 
-The production topology leverages a **Router-on-a-Stick (ROAS)** design isolating broadcast domains into distinct functional VLANs while maintaining full bidirectional reachability back to the native Proxmox-hosted NMS compute node:
+Topology leverages a simple **Router-on-a-Stick (ROAS)** design isolating broadcast domains into distinct functional VLANs in a Proxmox environment. Lab also NAT(PAT) into live environment to reach back out to WWW with exception for bi-directional traffic whose only destination is back and forth between lab and live networks.
 
 [![EVE-NG Topology](./assets/01_eve_ng_topology_final_simplified.png)](./assets/01_eve_ng_topology_final_simplified.png)  
-*Figure 2.1: Converged EVE-NG topology canvas displaying R1, SW1, and Linux interconnected with Net/Cloud0.*
+*Figure 2.1: EVE-NG topology canvas displaying R1, SW1, and Linux interconnected with NetManagement(Live Network). Ignore Winserver in this diagram.*
 
 ### IP Addressing & Subnet Allocation
 
 | Device | Interface | IP Address | Subnet Mask | Gateway | Role / Function |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Windows Server 2022** | `Ethernet` | `192.168.3.12` | `255.255.255.0` | `192.168.3.1` | SolarWinds Orion NPM & MSSQL 2022 |
+| **Windows Server 2022** | `Ethernet` | `192.168.3.12` | `255.255.255.0` | `192.168.3.1` | SolarWinds Orion NPM & MSSQL 2022(not in topo) |
 | **R1 (Edge Router)** | `Gi0/0` | `192.168.3.13` (DHCP) | `255.255.255.0` | `192.168.3.1` | External WAN / PAT & NMS Transit |
 | **R1 (ROAS Gateway)** | `Gi0/1.10` | `10.10.10.1` | `255.255.255.0` | N/A | Default Gateway for Workload VLAN 10 |
 | **R1 (ROAS Gateway)** | `Gi0/1.40` | `10.10.40.1` | `255.255.255.0` | N/A | Default Gateway for Mgmt VLAN 40 |
@@ -74,7 +74,7 @@ SolarWinds NPM requires a high-performance relational database backend with stri
 1. **Instance Provisioning:** Deployed a dedicated Microsoft SQL Server 2022 named instance (`SolarwindsSQL`) on the Windows Server 2022 VM (`192.168.3.12`).
 2. **Collation Configuration:** Configured the database collation specifically to `SQL_Latin1_General_CP1_CI_AS` (Case-Insensitive, Accent-Sensitive) as mandated by SolarWinds Orion database engine requirements.
 3. **Cumulative Update (CU) Patching:** Installed the latest Microsoft SQL Server 2022 Cumulative Update (CU) package to satisfy the SolarWinds installer prerequisite validation checks.
-4. **Memory Resource Capping:** To prevent SQL Server from consuming all system RAM on an 8 GB host, capped the max server memory buffer pool at **5,056 MB**, preserving dedicated compute overhead for the Orion Platform services and IIS web engine.
+4. **Memory Resource Capping:** To prevent SQL Server from consuming all system RAM on an 8 GB host, capped the max server memory buffer pool at **5,056 MB**, preserving dedicated compute overhead for the Orion Platform services and IIS web engine. Later on we increase the server memory to 16GB due to overhead memory consumption and services.
 
 ---
 
@@ -83,10 +83,10 @@ With the database backend validated:
 1. Executed the SolarWinds Orion Platform installer, selecting Network Performance Monitor (NPM).
 2. Connected the installer to `localhost\SolarwindsSQL` using SQL Server Authentication.
 3. Successfully executed the **SolarWinds Configuration Wizard**, initializing database tables, provisioning Orion services, and configuring the IIS Web Console on HTTPS port 443.
-4. Performed the initial administrator login and accessed **Discovery Central**:
+4. Performed the initial administrator login and accessed **Discovery Central**(at this time I discovered that static routes betweend live and lab are not established since it cannot be reach via https://192.168.3.12 in live environment):
 
 [![SolarWinds First Login](./assets/13_solarwinds_web_console_first_login.png)](./assets/13_solarwinds_web_console_first_login.png)  
-*Figure 3.1: SolarWinds Orion web console initial administrator login.*
+*Figure 3.1: SolarWinds Orion web console initial administrator login on solarwinds server itself*
 
 [![SolarWinds Discovery Central](./assets/14_solarwinds_discovery_central_desktop_browser.png)](./assets/14_solarwinds_discovery_central_desktop_browser.png)  
 *Figure 3.2: Accessing SolarWinds Discovery Central to begin network asset onboarding.*
@@ -106,7 +106,7 @@ Configured `R1` to synchronize with Google Public NTP (`time.google.com`), and p
 #### 2. VLANs, Trunks & DHCP Leases
 * `R1` configured with 802.1Q subinterfaces `Gi0/1.10` and `Gi0/1.40` running Cisco IOS DHCP pools.
 * `SW1` configured with 802.1Q trunk on `Gi0/0` and SVI `Vlan40` (`10.10.40.2/24`).
-* Workload host `box` dynamically acquired `10.10.10.21` from `R1`:
+* Workload host `box`(Linux host) dynamically acquired `10.10.10.21` from `R1`:
 
 [![Trunk Verification](./assets/10_sw1_vlan_trunk_ping_converged.png)](./assets/10_sw1_vlan_trunk_ping_converged.png)  
 *Figure 3.4: SW1 802.1Q trunk active; ping between SW1 SVI and R1 subinterfaces 100% successful.*
