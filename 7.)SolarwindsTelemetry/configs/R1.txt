@@ -1,0 +1,76 @@
+! ==============================================================================
+! Device: R1 (Edge Router & Router-on-a-Stick Gateway)
+! Lab 07: Enterprise Network Telemetry & Alerting (SolarWinds NPM)
+! Author: Philippe Truong
+! ==============================================================================
+hostname R1
+
+! External Uplink to Cloud / Net (DHCP from Proxmox vmbr0)
+interface GigabitEthernet0/0
+ description Upstream Link to Management Subnet
+ ip address dhcp
+ ip nat outside
+ no shutdown
+ exit
+
+! Trunk Downlink to SW1 (Router-on-a-Stick)
+interface GigabitEthernet0/1
+ description Trunk Downlink to SW1
+ no ip address
+ no shutdown
+ exit
+
+! Subinterface for VLAN 10 (Workloads)
+interface GigabitEthernet0/1.10
+ description Gateway for VLAN 10 (Workloads)
+ encapsulation dot1Q 10
+ ip address 10.10.10.1 255.255.255.0
+ ip nat inside
+ no shutdown
+ exit
+
+! Subinterface for VLAN 40 (Switch & Network Management)
+interface GigabitEthernet0/1.40
+ description Gateway for VLAN 40 (Management SVI)
+ encapsulation dot1Q 40
+ ip address 10.10.40.1 255.255.255.0
+ ip nat inside
+ no shutdown
+ exit
+
+! DHCP Pools for Subnets
+ip dhcp excluded-address 10.10.10.1 10.10.10.20
+ip dhcp pool VLAN10_USERS
+ network 10.10.10.0 255.255.255.0
+ default-router 10.10.10.1
+ dns-server 8.8.8.8
+ exit
+
+ip dhcp excluded-address 10.10.40.1 10.10.40.10
+ip dhcp pool VLAN40_MGMT
+ network 10.10.40.0 255.255.255.0
+ default-router 10.10.40.1
+ dns-server 8.8.8.8
+ exit
+
+! NAT Exemption ACL: Prevents PAT translation for return traffic destined to SolarWinds NMS (192.168.3.0/24)
+ip access-list extended NAT_EXEMPT_ACL
+ deny ip 10.10.0.0 0.0.255.255 192.168.3.0 0.0.0.255
+ permit ip 10.10.0.0 0.0.255.255 any
+ exit
+
+ip nat inside source list NAT_EXEMPT_ACL interface GigabitEthernet0/0 overload
+
+! NTP Time Synchronization
+ntp server time.google.com
+
+! SNMPv2c / Telemetry & Syslog
+snmp-server community SolarReadOnly RO
+snmp-server location Lab Edge Rack 1
+snmp-server contact Philippe Truong (NetOps)
+snmp-server enable traps snmp authentication linkdown linkup coldstart warmstart
+snmp-server enable traps config
+snmp-server trap-source GigabitEthernet0/0
+snmp-server host 192.168.3.12 version 2c SolarReadOnly
+logging host 192.168.3.12
+logging trap debugging

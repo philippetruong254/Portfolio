@@ -23,7 +23,8 @@ All labs are designed to solve real-world enterprise operational challenges: hig
 | **[03. Microsoft Entra ID Hybrid Identity & Hybrid Join](./03.\)EntraID/)** | Cloud Identity & Security | Microsoft Entra Connect, Password Hash Sync (PHS), Active Directory SCP, UPN Suffix Routing, Microsoft Entra Hybrid Join, Seamless SSO & PRT | 🟢 Completed |
 | **[04. Azure Hub-and-Spoke Architecture & Azure Firewall](./4.\)AzureHub%26Spoke/)** | Cloud Networking & Security | Azure Hub-and-Spoke, VNet Peering Mesh, Azure Firewall Basic (L4/L7), UDR Forced Routing (0.0.0.0/0), NSG Microsegmentation, ARM IaC, Cloud FinOps | 🟢 Completed |
 | **[05. Hybrid Site-to-Site IPsec VPN & BGP Peering](./5.\)IPSECVPN/)** | Hybrid Cloud Connectivity | Route-Based Site-to-Site IPsec VPN (IKEv2), Dynamic Routing over IPsec (eBGP ASN 65001 ⟷ 65515), Custom APIPA RFC 3927, Azure VNet Peering Gateway Transit, Fortinet FortiOS 7.6.7 Mature | 🟢 Completed |
-| **[06. Enterprise Network Telemetry & Alerting](./06.\)ZabbixTelemetry/)** | Telemetry & Observability | Zabbix 7.0 LTS, Cryptographic SNMPv3 (authPriv: SHA-256 / AES-128), 64-bit HC Interface Discards, SolarWinds Transferable Architecture | 🟢 Completed |
+| **[06. Enterprise Network Telemetry & Alerting](./06.\)ZabbixTelemetry/)** | Telemetry & Observability | Zabbix 7.0 LTS, Cryptographic SNMPv3 (authPriv: SHA-256 / AES-128), 64-bit HC Interface Discards, SolarWinds Transferable Architecture | 🟡 In Progress |
+| **[07. Commercial NMS & Event Alerting](./7.\)SolarwindsTelemetry/)** | Enterprise Observability & NMS | SolarWinds NPM / Orion Platform, SNMPv2c, SNMP Traps (UDP 162), Syslog Daemon (UDP 514), Cisco ROAS Routing & L2 Switching, NAT Exemption, Orion Maps, EVE-NG | 🟢 Completed |
 
 ---
 

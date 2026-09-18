@@ -1,0 +1,51 @@
+! ==============================================================================
+! Device: R2 (Right Edge Router)
+! Lab 07: Enterprise Telemetry, SNMP Traps & Informs to SolarWinds Orion
+! ==============================================================================
+hostname R2
+
+! Uplink to Cloud / Net
+interface GigabitEthernet0/0
+ description Upstream Link to Net
+ ip address dhcp
+ no shutdown
+ exit
+
+! Downlink to DSW2
+interface GigabitEthernet0/1
+ description Routed Link to DSW2
+ ip address 10.0.99.6 255.255.255.252
+ no shutdown
+ exit
+
+interface Loopback0
+ ip address 2.2.2.2 255.255.255.255
+ exit
+
+! OSPF Dynamic Routing
+router ospf 1
+ router-id 2.2.2.2
+ network 2.2.2.2 0.0.0.0 area 0
+ network 10.0.99.4 0.0.0.3 area 0
+ exit
+
+! SNMPv2c / SNMPv3 Configuration
+snmp-server community SolarReadOnly RO
+snmp-server location Edge Rack 2
+snmp-server contact Philippe Truong (NetOps)
+
+snmp-server view V3VIEW iso included
+snmp-server group ORION_ADMIN v3 priv read V3VIEW
+snmp-server user swadmin ORION_ADMIN v3 auth sha SolarAuth123! priv aes 128 SolarPriv123!
+
+! SNMP Traps & Acknowledged Informs to SolarWinds
+snmp-server enable traps snmp authentication linkdown linkup coldstart warmstart
+snmp-server enable traps ospf state-change
+snmp-server enable traps config
+snmp-server trap-source GigabitEthernet0/1
+
+snmp-server host 10.0.10.50 version 2c SolarReadOnly
+snmp-server host 10.0.10.50 informs version 2c SolarReadOnly
+snmp-server host 10.0.10.50 informs version 3 priv swadmin
+
+logging host 10.0.10.50

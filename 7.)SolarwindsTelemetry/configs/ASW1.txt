@@ -1,0 +1,51 @@
+! ==============================================================================
+! Device: ASW1 (Far-Left Access Switch - Winserver Tier)
+! Lab 07: Enterprise Telemetry, SNMP Traps & Informs to SolarWinds Orion
+! ==============================================================================
+hostname ASW1
+
+no ip routing
+
+! --- VLAN Database ---
+vlan 10
+ name NMS_Management
+ exit
+
+! --- Management SVI ---
+interface Vlan10
+ ip address 10.0.10.11 255.255.255.0
+ no shutdown
+ exit
+
+ip default-gateway 10.0.10.1
+
+! --- Trunk Uplink to DSW1 (Gi0/1) ---
+interface GigabitEthernet0/1
+ description Trunk Uplink to DSW1 (Gi1/0)
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,99
+ switchport trunk native vlan 99
+ no shutdown
+ exit
+
+! --- Access Port for Winserver / SolarWinds NPM (Gi0/0) ---
+interface GigabitEthernet0/0
+ description Windows Server 2022 (SolarWinds Orion Host)
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+ no shutdown
+ exit
+
+! --- SNMP Polling & Traps ---
+snmp-server community SolarReadOnly RO
+snmp-server location Access Tier - Server Rack
+snmp-server contact Philippe Truong (NetOps)
+
+snmp-server enable traps snmp authentication linkdown linkup
+snmp-server trap-source Vlan10
+snmp-server host 10.0.10.50 version 2c SolarReadOnly
+snmp-server host 10.0.10.50 informs version 2c SolarReadOnly
+
+logging host 10.0.10.50

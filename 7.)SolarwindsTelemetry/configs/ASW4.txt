@@ -1,0 +1,57 @@
+! ==============================================================================
+! Device: ASW4 (Far-Right Access Switch - Workload Tier)
+! Lab 07: Enterprise Telemetry, SNMP Traps & Informs to SolarWinds Orion
+! ==============================================================================
+hostname ASW4
+
+no ip routing
+
+! --- VLAN Database ---
+vlan 10
+ name NMS_Management
+ exit
+vlan 20
+ name Linux_Workloads
+ exit
+vlan 99
+ name Native_Trunk_Control
+ exit
+
+! --- Management SVI ---
+interface Vlan10
+ ip address 10.0.10.14 255.255.255.0
+ no shutdown
+ exit
+
+ip default-gateway 10.0.10.1
+
+! --- Trunk Uplink to DSW2 (Gi0/0) ---
+interface GigabitEthernet0/0
+ description Trunk Uplink to DSW2 (Gi1/0)
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,99
+ switchport trunk native vlan 99
+ no shutdown
+ exit
+
+! --- Access Port for Linux-03 (Gi0/1) ---
+interface GigabitEthernet0/1
+ description Linux-03 Workload Host (e0)
+ switchport mode access
+ switchport access vlan 20
+ spanning-tree portfast
+ no shutdown
+ exit
+
+! --- SNMP Polling & Traps ---
+snmp-server community SolarReadOnly RO
+snmp-server location Access Tier - Workload Rack 3
+snmp-server contact Philippe Truong (NetOps)
+
+snmp-server enable traps snmp authentication linkdown linkup
+snmp-server trap-source Vlan10
+snmp-server host 10.0.10.50 version 2c SolarReadOnly
+snmp-server host 10.0.10.50 informs version 2c SolarReadOnly
+
+logging host 10.0.10.50

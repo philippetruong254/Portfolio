@@ -1,0 +1,117 @@
+! ==============================================================================
+! Device: DSW2 (Right Distribution Layer Switch)
+! Lab 07: Enterprise Telemetry, SNMP Traps & Informs to SolarWinds Orion
+! ==============================================================================
+hostname DSW2
+
+ip routing
+
+! --- VLAN Database ---
+vlan 10
+ name NMS_Management
+ exit
+vlan 20
+ name Linux_Workloads
+ exit
+vlan 99
+ name Native_Trunk_Control
+ exit
+
+! --- Inter-Switch EtherChannel to DSW1 (Gi0/1 + Gi0/2) ---
+interface range GigabitEthernet0/1 - 2
+ description EtherChannel Link to DSW1
+ channel-group 1 mode active
+ no shutdown
+ exit
+
+interface Port-channel 1
+ description Port-Channel Trunk to DSW1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,99
+ switchport trunk native vlan 99
+ no shutdown
+ exit
+
+! --- Routed Uplink to R2 (Gi0/0) ---
+interface GigabitEthernet0/0
+ no switchport
+ description Routed Link to R2
+ ip address 10.0.99.5 255.255.255.252
+ no shutdown
+ exit
+
+! --- Downlink Trunks to Access Switches ---
+interface GigabitEthernet1/1
+ description Redundant Trunk to ASW2 (Linux-01 Access)
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,99
+ switchport trunk native vlan 99
+ no shutdown
+ exit
+
+interface GigabitEthernet0/3
+ description Redundant Trunk to ASW3 (Linux-02 Access)
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,99
+ switchport trunk native vlan 99
+ no shutdown
+ exit
+
+interface GigabitEthernet1/0
+ description Trunk to ASW4 (Linux-03 Access)
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,99
+ switchport trunk native vlan 99
+ no shutdown
+ exit
+
+! --- SVI Gateways with HSRP (Standby / Priority 100) ---
+interface Vlan10
+ description NMS Management Gateway
+ ip address 10.0.10.3 255.255.255.0
+ standby 10 ip 10.0.10.1
+ standby 10 priority 100
+ standby 10 preempt
+ no shutdown
+ exit
+
+interface Vlan20
+ description Linux Workload Gateway
+ ip address 10.0.20.3 255.255.255.0
+ standby 20 ip 10.0.20.1
+ standby 20 priority 100
+ standby 20 preempt
+ no shutdown
+ exit
+
+! --- OSPF Dynamic Routing ---
+router ospf 1
+ router-id 10.0.10.3
+ network 10.0.10.0 0.0.0.255 area 0
+ network 10.0.20.0 0.0.0.255 area 0
+ network 10.0.99.4 0.0.0.3 area 0
+ exit
+
+! --- SNMP Polling, Traps & Informs ---
+snmp-server community SolarReadOnly RO
+snmp-server location Distribution Fabric Rack 2
+snmp-server contact Philippe Truong (NetOps)
+
+snmp-server view V3VIEW iso included
+snmp-server group ORION_ADMIN v3 priv read V3VIEW
+snmp-server user swadmin ORION_ADMIN v3 auth sha SolarAuth123! priv aes 128 SolarPriv123!
+
+snmp-server enable traps snmp authentication linkdown linkup
+snmp-server enable traps hsrp
+snmp-server enable traps mac-notification change move
+snmp-server trap-source Vlan10
+
+snmp-server host 10.0.10.50 version 2c SolarReadOnly
+snmp-server host 10.0.10.50 informs version 2c SolarReadOnly
+snmp-server host 10.0.10.50 informs version 3 priv swadmin
+
+logging host 10.0.10.50

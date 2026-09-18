@@ -1,0 +1,56 @@
+! ==============================================================================
+! Device: SW1 (Cisco Catalyst L2 Distribution / Access Switch)
+! Lab 07: Enterprise Network Telemetry & Alerting (SolarWinds NPM)
+! Author: Philippe Truong
+! ==============================================================================
+hostname SW1
+no ip routing
+
+! Create VLANs
+vlan 10
+ name WORKLOADS
+ exit
+vlan 40
+ name MANAGEMENT
+ exit
+
+! Trunk Uplink to R1 (Router-on-a-Stick)
+interface GigabitEthernet0/0
+ description Trunk Uplink to R1 ROAS
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,40
+ no shutdown
+ exit
+
+! Access Port to Linux Workload Host
+interface GigabitEthernet0/2
+ description Access Port to Linux Host (box)
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+ no shutdown
+ exit
+
+! Management SVI
+interface Vlan40
+ description In-Band Management SVI
+ ip address 10.10.40.2 255.255.255.0
+ no shutdown
+ exit
+
+! Default Gateway pointing to R1 ROAS Subinterface
+ip default-gateway 10.10.40.1
+
+! NTP Synchronization
+ntp server 10.10.40.1
+
+! SNMPv2c & Syslog Configuration
+snmp-server community SolarReadOnly RO
+snmp-server location Distribution Row 1
+snmp-server contact Philippe Truong (NetOps)
+snmp-server enable traps snmp authentication linkdown linkup coldstart warmstart
+snmp-server trap-source Vlan40
+snmp-server host 192.168.3.12 version 2c SolarReadOnly
+logging host 192.168.3.12
+logging trap debugging
