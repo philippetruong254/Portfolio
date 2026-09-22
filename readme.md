@@ -25,6 +25,7 @@ All labs are designed to solve real-world enterprise operational challenges: hig
 | **[05. Hybrid Site-to-Site IPsec VPN & BGP Peering](./5.\)IPSECVPN/)** | Hybrid Cloud Connectivity | Route-Based Site-to-Site IPsec VPN (IKEv2), Dynamic Routing over IPsec (eBGP ASN 65001 ⟷ 65515), Custom APIPA RFC 3927, Azure VNet Peering Gateway Transit, Fortinet FortiOS 7.6.7 Mature | 🟢 Completed |
 | **[06. Enterprise Network Telemetry & Alerting](./06.\)ZabbixTelemetry/)** | Telemetry & Observability | Zabbix 7.0 LTS, Cryptographic SNMPv3 (authPriv: SHA-256 / AES-128), 64-bit HC Interface Discards, SolarWinds Transferable Architecture | 🟡 In Progress |
 | **[07. Commercial NMS & Event Alerting](./7.\)SolarwindsTelemetry/)** | Enterprise Observability & NMS | SolarWinds NPM / Orion Platform, SNMPv2c, SNMP Traps (UDP 162), Syslog Daemon (UDP 514), Cisco ROAS Routing & L2 Switching, NAT Exemption, Orion Maps, EVE-NG | 🟢 Completed |
+| **[08. Enterprise Windows Server DNS Infrastructure](./08.\)DNS_WindowServer/)** | Enterprise Systems & Core Services | Windows Server 2022 DNS, AD-Integrated Forward & Reverse Zones (`in-addr.arpa`), A / CNAME / PTR / SRV Records, Upstream Forwarders, PowerShell Automation | 🟢 Completed |
 
 ---
 
