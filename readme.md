@@ -2,7 +2,7 @@
 
 **Author:** Philippe Truong  
 **Copyright:** © 2026 Philippe Truong. All rights reserved.  
-**Focus Areas:** Enterprise Routing & Switching (Cisco/Fortinet), Enterprise Network Telemetry (Zabbix/SNMPv3), Windows Server Infrastructure (AD DS/DNS/GPO), Microsoft Azure Cloud Networking, Azure Firewall, and Entra ID Hybrid Identity.
+**Focus Areas:** Enterprise Routing & Switching (Cisco/Fortinet), Enterprise Network Telemetry (Zabbix/SNMPv3), Windows Server Infrastructure (AD DS/DNS/GPO), Microsoft Azure & AWS Multi-Cloud Networking, Zero-Trust Architecture, and Entra ID Hybrid Identity.
 
 ---
 
@@ -26,6 +26,7 @@ All labs are designed to solve real-world enterprise operational challenges: hig
 | **[06. Enterprise Network Telemetry & Alerting](./06.\)ZabbixTelemetry/)** | Telemetry & Observability | Zabbix 7.0 LTS, Cryptographic SNMPv3 (authPriv: SHA-256 / AES-128), 64-bit HC Interface Discards, SolarWinds Transferable Architecture | 🟡 In Progress |
 | **[07. Commercial NMS & Event Alerting](./7.\)SolarwindsTelemetry/)** | Enterprise Observability & NMS | SolarWinds NPM / Orion Platform, SNMPv2c, SNMP Traps (UDP 162), Syslog Daemon (UDP 514), Cisco ROAS Routing & L2 Switching, NAT Exemption, Orion Maps, EVE-NG | 🟢 Completed |
 | **[08. Enterprise Windows Server DNS Infrastructure](./08.\)DNS_WindowServer/)** | Enterprise Systems & Core Services | Windows Server 2022 DNS, AD-Integrated Forward & Reverse Zones (`in-addr.arpa`), A / CNAME / PTR / SRV Records, Upstream Forwarders, PowerShell Automation | 🟢 Completed |
+| **[09. AWS Multi-Tier VPC & Zero-Trust Cloud Architecture](./09.\)AWS_VPC_Networking/)** | AWS Cloud Networking & Security | AWS Multi-Tier VPC (`10.0.0.0/16`), Dual-AZ Subnet Segmentation, Internet Gateway (IGW), S3 Gateway VPC Endpoint, Stateful Security Group Chaining, Bastion Jump Host, Cloud-Init Automation, Cloud FinOps ($0.00 spend) | 🟢 Completed |
 
 ---
 
